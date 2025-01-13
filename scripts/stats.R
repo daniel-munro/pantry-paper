@@ -1,19 +1,5 @@
 library(tidyverse)
 
-# get_phenotypes <- function(modality) {
-#     df <- read_tsv(str_glue("data/geuvadis/phenotypes/{modality}.bed.gz"),
-#                    col_types = cols(phenotype_id = "c", .default = "-"))
-#     group_file <- str_glue("data/geuvadis/phenotypes/{modality}.phenotype_groups.txt")
-#     if (file.exists(group_file)) {
-#         groups <- read_tsv(group_file, col_types = "cc",
-#                            col_names = c("phenotype_id", "gene_id"))
-#         df <- left_join(df, groups, by = "phenotype_id")
-#     } else if (str_sub(df$phenotype_id[1], 1, 3) == "ENS") {
-#         df <- mutate(df, gene_id = phenotype_id)
-#     } else {
-#         df <- mutate(df, gene_id = NA)
-#     }
-# }
 get_phenotypes <- function(modality) {
     df <- read_tsv(str_glue("data/geuvadis/phenotypes/{modality}.bed.gz"),
                    col_types = cols(phenotype_id = "c", .default = "-"))
@@ -100,17 +86,7 @@ qtls_sep <- read_tsv("data/processed/geuvadis.sep.qtls.tsv.gz", col_types = "cic
 qtls_comb <- read_tsv("data/processed/geuvadis.comb.qtls.tsv.gz", col_types = "cicccid") |>
     mutate(modality = factor(modalities[modality], level = modalities))
 
-# qtls_sep |>
-#     filter(modality == "Expression") |>
-#     distinct(gene_id) |>
-#     count()
-# qtls_sep |>
-#     mutate(modality = if_else(modality == "Expression", "Expression", "Other")) |>
-#     distinct(gene_id, modality) |>
-#     summarise(modalities = str_c(sort(modality), collapse = "_"),
-#               .by = gene_id) |>
-#     count(modalities)
-## We now start with reporting combined modality QTLs
+## We start with reporting combined modality QTLs
 nrow(qtls_comb)
 n_distinct(qtls_comb$gene_id)
 qtls_comb |>
@@ -272,10 +248,3 @@ twas |>
     summarise(has_non_expr = any(modality != "Expression"),
               .by = c(trait, gene_id)) |>
     with(mean(has_non_expr))
-# # counting genes:
-# twas |>
-#     filter("Expression" %in% modality,
-#            .by = gene_id) |>
-#     summarise(has_non_expr = any(modality != "Expression"),
-#               .by = gene_id) |>
-#     with(mean(has_non_expr))

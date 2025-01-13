@@ -29,7 +29,7 @@ ssize <- read_tsv("data/geuvadis/twas/gwas_metadata.txt",
                   col_types = cols(Tag = "c", Sample_Size = "i", .default = "-")) |>
     mutate(
         # Sample_Size = format(Sample_Size, big.mark=","),
-        # Sample_Size = scales::label_number(scale_cut = scales::cut_short_scale())(Sample_Size), # Currently fails due to but in scales package
+        # Sample_Size = scales::label_number(scale_cut = scales::cut_short_scale())(Sample_Size), # Currently fails due to bug in scales package
         Sample_Size = Sample_Size |> round(-3) |> str_sub(1, -4) |> str_c("K"),
     ) |>
     deframe()
@@ -55,7 +55,6 @@ d <- twas |>
 d20 <- d |>
     filter(trait %in% levels(fct_infreq(trait))[1:20])
 
-# unique(d$trait)
 trait_labels <- c(
     Astle_et_al_2016_Eosinophil_counts = "Eosinophil count",
     Astle_et_al_2016_Granulocyte_count = "Granulocyte count",
@@ -85,8 +84,6 @@ d20 |>
     mutate(trait = trait_labels[trait] |> fct_infreq() |> fct_rev()) |>
     ggplot(aes(y = trait, fill = modality_hits)) +
     geom_bar(width = 0.8, color = "black") +
-    # scale_fill_manual(values = c("blue", "#dd88ff", "red")) +
-    # scale_fill_manual(values = c("#ff62ba", "#bc98ff", "#00dbff")) +
     scale_fill_manual(values = c("white", "gray", "#444444")) +
     theme_classic() +
     theme(
@@ -201,21 +198,11 @@ twas_gtex <- read_tsv("data/processed/gtex.twas_hits.tsv.gz", col_types = "ccccc
     filter(!is.na(COLOC.PP0)) |>
     mutate(modality = factor(modalities[modality], levels = modalities))
 
-# tissue_order <- read_tsv("data/gtex/tissueInfo.tsv",
-#                          col_types = cols(tissueSiteDetailAbbr = "c",
-#                                           rnaSeqAndGenotypeSampleCount = "i",
-#                                           .default = "-")) |>
-#     select(tissue = tissueSiteDetailAbbr,
-#            n_samples = rnaSeqAndGenotypeSampleCount) |>
-#     arrange(desc(n_samples)) |>
-#     pull(tissue)
-
 expr_other_gtex <- twas_gtex |>
     filter(COLOC.PP4 > 0.8) |>
     mutate(modality_type = if_else(modality == "Expression", "Expression", "Other")) |>
     distinct(tissue, trait, gene_id, modality_type) |>
     summarise(
-        # modality_hits = str_glue("{'Expression' %in% modality_type}_{'Other' %in% modality_type}"),
         modality_hits = str_c(sort(modality_type), collapse = "_"),
         .by = c(tissue, trait, gene_id)
     ) |>
@@ -228,33 +215,26 @@ expr_other_gtex <- twas_gtex |>
 
 data_4c <- expr_other_gtex |>
     mutate(tissue = fct_infreq(tissue)) |>
-    # mutate(tissue = factor(tissue, levels = tissue_order)) |>
     summarise(n_pairs = n(),
               thousands = n() / 1000,
               .by = c(tissue, modality_hits))
 
 ggplot(data_4c, aes(x = thousands, y = tissue, fill = modality_hits)) +
     geom_col(width = 1, color = "black") +
-    # scale_fill_manual(values = c("#5555ff", "#dd88ff", "#ff5555")) +
-    # scale_fill_manual(values = c("#ff62ba", "#bc98ff", "#00dbff")) +
     scale_fill_manual(values = c("white", "gray", "#444444")) +
-    # scale_fill_viridis_d() +
     theme_classic() +
     theme(
         axis.line.y = element_blank(),
         axis.text = element_text(color = "black"),
-        # axis.text.y = element_text(size = 8),
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank(),
         legend.key.size = unit(10, "pt"),
-        # legend.position = c(0.8, 0.8),
         legend.position = "inside",
         legend.position.inside = c(0.75, 0.75),
         legend.text = element_text(size = 8),
     ) +
     scale_x_continuous(expand = c(0, 0.1)) +
     labs(fill = "Colocalizations\ninclude") +
-    # xlab("Gene-trait pairs with GWAS\ncolocalization(s) (thousands)") +
     xlab("Colocalized gene-trait pairs (×1000)") +
     ylab("GTEx tissues")
 

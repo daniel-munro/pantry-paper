@@ -89,7 +89,6 @@ enrich <- enrich_all |>
 stripes <- tibble(y = seq(1, length(levels(enrich$category)), by = 2) - 0.5)
 
 p1 <- enrich |>
-    # mutate(category = as.integer(category) + (7/16) - (1/8) * as.integer(modality)) |>
     mutate(category = as.integer(category) + (7/20) - (1/10) * as.integer(modality)) |>
     ggplot(aes(x = log2_enrich_mean,
                xmin = log2_enrich_mean - log2_enrich_sd,
@@ -103,7 +102,6 @@ p1 <- enrich |>
     geom_linerange(linewidth = 0.6) +
     geom_point(size = 1.5, stroke = 0.75) +
     scale_color_manual(values = modality_colors) +
-    # scale_shape_manual(values = c(16, 17, 15, 4, 5, 8)) +
     scale_shape_manual(values = c(16, 17, 15, 4, 8, 5)) +
     expand_limits(x = 5.9) +
     scale_y_continuous(breaks = 1:length(levels(enrich$category)),

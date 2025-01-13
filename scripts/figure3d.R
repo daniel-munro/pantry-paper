@@ -97,7 +97,7 @@ enrich <- bind_rows(
               log2_enrich_sd = sd(log2_enrich),
               frac_qtls_mean = mean(frac_qtls),
               .by = c(group, modality, category)) |>
-    mutate(category = categories[category] |> #fct_reorder(log2_enrich_mean, var))
+    mutate(category = categories[category] |>
                fct_relevel( # Same order as first enrichment figure
                    "Intron", "CTCF binding site", "Open chromatin", "TF binding site",
                    "Enhancer", "Promoter-flanking", "Truncating", "NC transcript",
@@ -108,7 +108,6 @@ stripes <- tibble(y = seq(1, length(levels(enrich$category)), by = 2) - 0.5)
 
 enrich |>
     group_by(modality, category) |>
-    # mutate(shade = sqrt(abs(diff(log2_enrich_mean)))) |>
     mutate(shade = abs(diff(log2_enrich_mean))) |>
     ungroup() |>
     mutate(
@@ -128,7 +127,6 @@ enrich |>
     geom_point(size = 1.5, stroke = 0.75) +
     scale_shape_manual(values = c(5, 15)) + # c(4, 16)) +
     scale_color_manual(values = modality_colors) +
-    # scale_alpha_continuous(range = c(0.2, 1)) +
     scale_y_continuous(breaks = 1:length(levels(enrich$category)),
                        labels = levels(enrich$category),
                        expand = c(0, 0)) +

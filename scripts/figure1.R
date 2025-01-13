@@ -64,10 +64,6 @@ data_1b <- phenos |>
 
 ggplot(data_1b, aes(x = thousands, y = modality, fill = modality, alpha = gene_biotype)) +
     geom_col(width = 0.8, show.legend = FALSE) +
-    # annotate("errorbar", y = 3.7, width = 0.3, linewidth = 0.2,
-    #          xmin = with(phenos, sum(modality == modalities[3] & gene_biotype == "protein_coding") / 1000),
-    #          xmax = with(phenos, sum(modality == modalities[3]) / 1000)) +
-    # annotate("text", x = 62, y = 3.9, hjust = 0, size = 2.5, label = "Non-protein-\ncoding") +
     annotate("segment", x = pos1, xend = pos1, y = 6.4, yend = 7.4, linewidth = 0.3) +
     annotate("text", x = pos1 - 2, y = 7.5, hjust = 0, vjust = 0, size = 2.5, label = "protein-coding") +
     annotate("segment", x = pos2, xend = pos2, y = 6.4, yend = 6.6, linewidth = 0.3) +
@@ -120,30 +116,3 @@ ggsave("figures/figure1/figure1c.pdf", width = 3.8, height = 1.6)
 
 write_tsv(data_1c, "figures/source_data/Figure_1c.txt")
 
-# #############
-# ## Panel D ## Heritability
-# #############
-# 
-# hsq <- read_tsv("data/geuvadis.hsq.tsv.gz", col_types = "ccciddddddddddd") |>
-#     mutate(modality = factor(modalities[modality], levels = modalities)) |>
-#     filter(gene_id %in% genes$gene_id)
-# 
-# hsq |>
-#     mutate(modality = fct_rev(modality)) |>
-#     ggplot(aes(x = hsq, y = modality, fill = modality)) +
-#     geom_violin(linewidth = 0, show.legend = FALSE) +
-#     geom_boxplot(width = 0.3, linewidth = 0.3, outlier.shape = NA, fill = NA, show.legend = FALSE) +
-#     scale_fill_manual(values = modality_colors) +
-#     theme_classic() +
-#     theme(
-#         axis.text = element_text(color = "black"),
-#         plot.margin = margin(5.5, 10, 5.5, 5.5, unit = "pt"), # 1.00 is cut off
-#     ) +
-#     xlab(expression("Phenotype cis-heritability "*(h^2))) +
-#     ylab("Modality")
-# 
-# ggsave("figures/figure1/figure1d.png", width = 3.7, height = 1.5, device = png)
-
-# p1 + p2 + plot_annotation(tag_levels = "A")
-# 
-# ggsave("figures/figure1/figure1.png", width = 5, height = 4, device = png)

@@ -45,56 +45,11 @@ afc_comb <- ase_comb |>
 eqtls_comb <- read_tsv("data/processed/gtex.comb.qtls.tsv.gz", col_types = "cc-c-c-d") |>
     filter(tissue == "ADPSBQ",
            modality == "expression") |>
-    # filter(pval_beta < 0.001) |>
     left_join(afc_comb, by = c("gene_id", "variant_id"), relationship = "many-to-one")
 eqtls_sep <- read_tsv("data/processed/gtex.sep.qtls.tsv.gz", col_types = "cc-c-c-d") |>
     filter(tissue == "ADPSBQ",
            modality == "expression") |>
-    # slice_min(pval_beta, n = nrow(eqtls_comb)) |>
-    # filter(pval_beta < 0.001) |>
     left_join(afc_sep, by = c("gene_id", "variant_id"), relationship = "many-to-one")
-
-## To reduce effect of combined-mapping being more conservative, adjust threshold
-## for separately mapped until median p-values are equal.
-# cumulative_median <- function(x) {
-#     map_dbl(seq_along(x), \(i) median(x[1:i]))
-# }
-# match_median <- function(x, target_median) {
-#     cummedian <- map_dbl(seq_along(x), \(i) median(x[1:i]))
-#     seq_along(x) <= which.min(abs(cummedian - target_median))
-# }
-# 
-# eqtls_sep <- eqtls_sep |>
-#     arrange(pval_beta) |>
-#     ## mutate(cummedian = cumulative_median(pval_beta))
-#     # mutate(cummedian = map_dbl(seq_along(pval_beta), \(i) median(pval_beta[1:i]))) |>
-#     filter(match_median(pval_beta, median(eqtls_comb$pval_beta)))
-
-# ## To reduce effect of combined-mapping being more conservative, get intersection
-# ## of exact gene-variant pairs shared by the two methods, and
-# x <- inner_join(
-#     eqtls_sep |> select(gene_id, variant_id, p_sep = pval_beta),
-#     eqtls_comb |> select(gene_id, variant_id, p_comb = pval_beta),
-#     by = c("gene_id", "variant_id"),
-#     relationship = "many-to-many"
-# )
-
-# ## To reduce effect of combined-mapping being more conservative, use only
-# ## gene-variant pairs in common between the methods
-# shared_pairs <- inner_join(
-#     eqtls_sep |> distinct(gene_id, variant_id),
-#     eqtls_comb |> distinct(gene_id, variant_id),
-#     by = c("gene_id", "variant_id"),
-#     relationship = "one-to-one"
-# )
-# eqtls_sep <- eqtls_sep |>
-#     inner_join(shared_pairs,
-#                by = c("gene_id", "variant_id"),
-#                relationship = "one-to-one")
-# eqtls_comb <- eqtls_comb |>
-#     inner_join(shared_pairs,
-#                by = c("gene_id", "variant_id"),
-#                relationship = "many-to-one")
 
 ## To reduce effect of combined-mapping being more conservative, resample
 ## separately-mapped eQTLs by taking the nearest p-value (in log space) to each
@@ -114,7 +69,6 @@ for (i in 1:nrow(eqtls_comb)) {
     indices <- c(indices, j)
 }
 eqtls_sep <- slice(eqtls_sep, indices)
-# plot(eqtls_comb$pval_beta, eqtls_sep$pval_beta)
 
 afc <- bind_rows(
     eqtls_sep |> mutate(method = "Separate modality mapping", .before = 1),
@@ -143,12 +97,8 @@ stats <- afc |>
               .by = method) |>
     left_join(n_eqtls, by = "method") |>
     mutate(
-        # stats = str_c("r=", format(Pearson_r, digits = 3),
-        #               " rho=", format(Spearman_rho, digits = 3)),
         stats1 = str_c("r=", format(Pearson_r, digits = 3)),
         stats2 = str_c("rho=", format(Spearman_rho, digits = 3)),
-        # count = str_glue("n={n_eQTLs_w_aFC} (of {n_eQTLs})")
-        # count = str_glue("n={n_eQTLs_w_aFC} (at p<0.001)")
         count = str_glue("n={n_eQTLs_w_aFC} eQTLs")
     )
 
@@ -161,9 +111,6 @@ ggplot(data_s5, aes(x = log2_aFC_ASE, y = log2_aFCn_eQTL)) +
     facet_wrap(~method) +
     geom_abline(slope = 1, intercept = 0, color = "gray", lty = 2) +
     geom_point(size = 0.25, alpha = 0.5) +
-    # geom_text(aes(x = 0.5, y = -5.5, label = stats), data = stats, hjust = "left", size = 3.5) +
-    # geom_text(aes(x = 0.5, y = -6.5, label = count), data = stats, hjust = "left", size = 3.5) +
-    # geom_text(aes(x = 0.5, y = -6.5, label = count), data = stats, hjust = "left", size = 3.5) +
     geom_text(aes(x = 6, y = -4.5, label = stats1), data = stats, hjust = "right", size = 3.5) +
     geom_text(aes(x = 6, y = -5.5, label = stats2), data = stats, hjust = "right", size = 3.5) +
     geom_text(aes(x = 6, y = -6.5, label = count), data = stats, hjust = "right", size = 3.5) +

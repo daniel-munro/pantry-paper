@@ -24,7 +24,6 @@ background_counts <- function(tested, genes, anno, anno_snps) {
     snps_rng <- with(snp_info, GRanges(chrom, IRanges(pos, pos)))
     tested |>
         reframe({
-            # gene_ids <- gene_id
             bg_snps <- background_snps(gene_id, genes, snp_info$SNP, snps_rng)
             count_in_snps(bg_snps, anno) |>
                 rename(count_bg = count) |>

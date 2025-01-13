@@ -63,7 +63,6 @@ p1 <- z_sex |>
     facet_wrap(~ modality) +
     geom_point(size = 1, alpha = 0.3) +
     geom_text(aes(x = -60, y = 46, label = label), data = stats_sex, hjust = "left", size = 3) +
-    # geom_text(aes(x = -60, y = 40, label = count), data = stats_sex, hjust = "left", size = 3.5) +
     scale_color_viridis_c() +
     coord_fixed() +
     theme_classic() +
@@ -102,7 +101,6 @@ p2 <- z_age |>
     facet_wrap(~ modality) +
     geom_point(size = 1, alpha = 0.3) +
     geom_text(aes(x = -60, y = 46, label = label), data = stats_age, hjust = "left", size = 3) +
-    # geom_text(aes(x = -60, y = 40, label = count), data = stats_age, hjust = "left", size = 3.5) +
     scale_color_viridis_c() +
     coord_fixed() +
     theme_classic() +
@@ -111,21 +109,16 @@ p2 <- z_age |>
     ggtitle("Adding age to PC covariates")
 p2
 
-# p1 + p2
-# ggsave("figures/figureS9.png", width = 13, height = 5.5, device = png)
-
 p1 / p2 + plot_annotation(tag_levels = "a") & theme(plot.tag = element_text(face = "bold"))
 ggsave("figures/figureS9.png", width = 5, height = 8, device = png)
 
 data_s9a <- z_sex |>
-    # select(modality, z_nometa, z_sex) |>
     mutate(z_nometa = sprintf("%g", z_nometa),
            z_sex = sprintf("%g", z_sex))
 
 write_tsv(data_s9a, "figures/source_data/Supp_Figure_9a.txt")
 
 data_s9b <- z_age |>
-    # select(modality, z_nometa, z_age) |>
     mutate(z_nometa = sprintf("%g", z_nometa),
            z_age = sprintf("%g", z_age))
 

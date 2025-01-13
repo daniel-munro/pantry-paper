@@ -49,13 +49,6 @@ p
 # ggsave("figures/figure2/figure2d.png", width = 6, height = 5, device = png)
 ggsave("figures/figure2/figure2d.pdf", width = 6, height = 5)
 
-# data_2d <- qtls_pos |>
-#     filter(rel_pos_gene >= -1,
-#            rel_pos_gene <= 2) |>
-#     mutate(bin = floor((rel_pos_gene + 1/66) * 33) / 33) |>
-#     # filter(bin >= -1,
-#     #        bin <= 2) |>
-#     count(modality, bin, name = "n_qtls")
 data_2d <- ggplot_build(p)$data[[1]] |>
     as_tibble() |>
     select(modality = fill, xmin, xmax, n_qtls = count) |>
@@ -65,11 +58,6 @@ data_2d <- ggplot_build(p)$data[[1]] |>
 
 write_tsv(data_2d, "figures/source_data/Figure_2d.txt")
 
-# bind_rows(
-#     ggplot_build(p_tss)[["data"]][[1]],
-#     ggplot_build(p_tes)[["data"]][[1]],
-# ) |>
-#     summarise(height = max(count), .by = group)
 ylims <- tribble(
     ~modality, ~ylim,
     'Expression', 1041,
@@ -86,7 +74,6 @@ qtls_pos |>
     facet_wrap(~ modality, ncol = 1, scales = "free") +
     geom_blank(mapping = aes(x = 0, y = ylim), data = ylims) +
     geom_histogram(bins = 50, show.legend = FALSE) +
-    # geom_vline(xintercept = 0, alpha = 0.5) +
     scale_fill_manual(values = modality_colors) +
     scale_x_continuous(limits = c(-5e4, 5e4), expand = c(0, 0), breaks = c(-5e4, 0, 5e4),
                        labels = c("-50 Kb", "Start", "+50 Kb")) +
@@ -106,7 +93,6 @@ qtls_pos |>
     xlab(NULL) +
     ylab(NULL)
 
-# ggsave("figures/figure2/figure2dtss.png", width = 1.4, height = 6, device = png)
 # ggsave("figures/figure2/figure2dtss.png", width = 1.2, height = 5.5, device = png)
 ggsave("figures/figure2/figure2dtss.pdf", width = 1.2, height = 5.5)
 
@@ -115,7 +101,6 @@ qtls_pos |>
     facet_wrap(~ modality, ncol = 1, scales = "free") +
     geom_blank(mapping = aes(x = 0, y = ylim), data = ylims) +
     geom_histogram(bins = 50, show.legend = FALSE) +
-    # geom_vline(xintercept = 0, alpha = 0.5) +
     scale_fill_manual(values = modality_colors) +
     scale_x_continuous(limits = c(-5e4, 5e4), expand = c(0, 0), breaks = c(-5e4, 0, 5e4),
                        labels = c("-50 Kb", "End", "+50 Kb")) +

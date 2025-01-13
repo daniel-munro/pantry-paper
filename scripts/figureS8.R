@@ -88,13 +88,12 @@ limits_twas <- twas_frac_stats |>
         .by = modality
     )
 
-stdevs <- 3 # 1.96 # determine extent of shaded area and which points to show as outliers
+stdevs <- 3 # determine extent of shaded area and which points to show as outliers
 
-lines <- crossing(x = seq(5.5, 40, 5),#levels(qtls$tissue)[seq(3, 40, 5)],
+lines <- crossing(x = seq(5.5, 40, 5),
                   modality = unique(qtls_frac$modality))
 
 p1 <- qtls_frac |>
-    # mutate(shape = case_when(z > 1.96 ~ "high", z < -1.96 ~ "low", .default = "mid")) |>
     mutate(shape = case_when(z > stdevs ~ "high", z < -stdevs ~ "low", .default = "mid")) |>
     ggplot(aes(x = tissue, y = frac_in_tissue, color = modality, group = modality, shape = shape)) +
     facet_wrap(~ modality, ncol = 1, scales = "free_y") +
@@ -120,8 +119,6 @@ p1 <- qtls_frac |>
     theme_classic() +
     theme(
         axis.text.x = element_text(hjust = 1, vjust = 0.5, angle = 90),
-        # panel.grid.major.x = element_line(),
-        # plot.margin = margin(20, 5.5, 5.5, 5.5),
     )
 p1
 
@@ -153,7 +150,6 @@ p2 <- twas_frac |>
     theme_classic() +
     theme(
         axis.text.x = element_text(hjust = 1, vjust = 0.5, angle = 90),
-        # plot.margin = margin(20, 5.5, 5.5, 5.5),
     )
 p2
 
@@ -184,22 +180,6 @@ qtls_frac |>
 twas_frac |>
     filter(modality == "Intron excision ratio") |>
     arrange(desc(frac_in_tissue))
-
-# # "These fractions in Testis, the tissue with the most cis-QTLs and the most 
-# # TWAS hits, were especially high compared to fractions in other tissues with 
-# # high total counts..."
-# 
-# qtls_frac |>
-#     filter(modality == "Intron excision ratio") |>
-#     arrange(desc(n)) |>
-#     slice(2:11) |>
-#     with(range(frac_in_tissue))
-# 
-# twas_frac |>
-#     filter(modality == "Intron excision ratio") |>
-#     arrange(desc(n)) |>
-#     slice(2:11) |>
-#     with(range(frac_in_tissue))
 
 # "Another strong deviation was cultured fibroblasts having a relatively high
 # fraction of xQTL hits for RNA stability (13.4%, compared to mean 8.7%

@@ -68,7 +68,6 @@ write_tsv(geuv_qtls_sep, "data/processed/geuvadis.sep.qtls.tsv")
 
 geuv_qtls_comb <- read_tsv("data/geuvadis/qtl/all.cis_independent_qtl.txt.gz",
                       col_types = "c-----cc-------cc-i") |>
-    # mutate(modality = modalities[str_extract(phenotype_id, "^[^:]+")],
     separate_wider_delim(phenotype_id, ":", names = c("modality", "phenotype_id"), too_many = "merge") |>
     select(gene_id = group_id, rank, modality, phenotype_id, variant_id, tss_distance, pval_beta) |>
     filter(gene_id %in% genes) |>
@@ -213,7 +212,6 @@ gtex_twas <- tibble(tissue = tissues) |>
     reframe({
         fname <- str_glue("data/gtex/twas/{tissue}.twas_hits.tsv")
         if (file.exists(fname)) {
-            # read_tsv(fname, col_types = "cccciidcdcdddiicddddddddd")
             read_tsv(fname, col_types = "ccccccccccccccccccccccccc")
         } else {
             tibble()

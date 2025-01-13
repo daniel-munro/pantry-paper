@@ -83,10 +83,6 @@ p1 <- pvals_gwas |>
     geom_point(size = 0.5) +
     scale_x_continuous(expand = c(0, 0)) +
     theme_classic() +
-    theme(
-        # axis.text.x = element_blank(),
-        # axis.ticks.x = element_blank(),
-    ) +
     xlab(str_glue("{chrom} position (Mb)")) +
     ylab("-log10(P), GWAS") +
     ggtitle(str_glue("{trait_names[trait_id]} (GWAS, n=337K)"))
@@ -94,26 +90,17 @@ p1 <- pvals_gwas |>
 p2 <- pvals_qtls |>
     mutate(position = position / 1e6) |>
     ggplot(aes(x = position, y = -log10(pvalue), color = modality)) +
-    # facet_grid(rows = vars(modality)) +
     facet_wrap(~ pheno_label, ncol = 1) +
     geom_point(size = 0.5) +
-    # geom_text(aes(label = pheno_label, position = NULL, pvalue = NULL, modality = NULL),
-    #           data = distinct(pvals_qtls, modality, pheno_label),
-    #           x = min(pvals_qtls$position / 1e6 + 0.02),
-    #           y = Inf, hjust = 0, vjust = 1.2, color = "black") +
     scale_x_continuous(expand = c(0, 0)) +
-    # expand_limits(y = 40) +
     scale_color_manual(values = modality_colors) +
     guides(color = "none") +
     theme_classic() +
     theme(
         strip.background = element_blank(),
-        # strip.text = element_blank(),
-        # panel.spacing.y = unit(10, "pt"),
     ) +
     xlab(str_glue("{chrom} position (Mb)")) +
     ylab("-log10(P), xQTL") +
-    # ggtitle(str_glue("{gene_names[gene]} phenotypes in {tissue_name}"),
     ggtitle(expression(italic("ORC4")*" phenotypes in cortex"),
             subtitle = "Showing phenotype with lowest p-value per modality")
 

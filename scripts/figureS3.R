@@ -70,9 +70,6 @@ df_stats <- df |>
         n = n(),
         r_slope_sig = cor(slope_geuvadis, slope_gtex),
         label = str_glue("n = {n} xQTLs\nr = {sprintf('%.2f', r_slope_sig)}"),
-        # slope_slope_sig = lm(slope_gtex ~ slope_geuvadis, data = tibble(slope_gtex, slope_geuvadis))$coefficients[2],
-        # slopedem_slope_sig = deming::deming(slope_gtex ~ slope_geuvadis, data = tibble(slope_gtex, slope_geuvadis))$coefficients[2],
-        # label = str_glue("r = {sprintf('%.2f', r_slope_sig)}\nDeming slope = {sprintf('%.2f', slopedem_slope_sig)}"),
         Pearson_r = r_slope_sig,
         Pearson_p = cor.test(slope_geuvadis, slope_gtex)$p.value,
         .by = modality
@@ -89,14 +86,11 @@ df |>
     geom_hline(yintercept = 0, linewidth = 0.2, color = "gray") +
     geom_vline(xintercept = 0, linewidth = 0.2, color = "gray") +
     geom_abline(slope = 1, intercept = 0, linewidth = 0.2, color = "gray") +
-    # geom_point(alpha = 0.2) +
     geom_point(size = 0.5) +
     geom_text(aes(x = NULL, y = NULL, color = NULL, label = label),
               data = df_stats, x = -3.4, y = 3.2, hjust = 0, size = 3.5,
               lineheight = 0.8, show.legend = FALSE) +
-    # annotate("text", x = -2.25, y = -3, label = "x = y", color = "#666666", size = 3.5) +
     geom_text(data = tibble(modality = factor("Expression", levels = levels(df$modality)),
-                            # slope_geuvadis = -2.25, slope_gtex = -3,
                             slope_geuvadis = -2.95, slope_gtex = -2.1,
                             color = NULL),
                             label = "x = y", color = "#666666", size = 3.5) +
@@ -105,7 +99,6 @@ df |>
     scale_color_manual(values = colors, breaks = c("Expression", "AAA_nonsig"),
                        labels = c("True  ", "False")) +
     labs(color = "Signif. in Geuvadis") +
-    # guides(color = "none") +
     theme_classic() +
     theme(
         legend.background = element_rect(color = "black", linewidth = 0.2),

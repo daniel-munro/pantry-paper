@@ -73,13 +73,9 @@ top_mod <- bind_rows(
         select(method, trait, gene_id, modality),
 )
 
-# count(top_mod, method)
-
 top_mod |>
-    # mutate(method = fct_rev(method)) |>
     ggplot(aes(y = method, fill = modality)) +
     facet_wrap(~ method, ncol = 1, scales = "free") +
-    # geom_bar(position = "fill") +
     geom_bar() +
     scale_fill_manual(values = modality_colors) +
     scale_y_discrete(expand = c(0, 0)) +

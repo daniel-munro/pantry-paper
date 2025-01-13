@@ -61,27 +61,6 @@ ggsave("figures/figure2/figure2a.pdf", width = 3.2, height = 1.7)
 
 write_tsv(data_2a, "figures/source_data/Figure_2a.txt")
 
-# #############
-# ## Panel B ## Expression vs. other gene Venn diagrams
-# #############
-# # https://jolars.github.io/eulerr/reference/plot.euler.html
-# 
-# # xQTL genes, expression vs. other
-# venn1 <- qtls |>
-#     mutate(modality_type = if_else(modality == "Expression", "Expression", "Other modalities")) |>
-#     distinct(gene_id, modality_type) |>
-#     summarise(
-#         modality_hits = str_c(sort(modality_type), collapse = "&"),
-#         .by = gene_id
-#     ) |>
-#     count(modality_hits) |>
-#     deframe() |>
-#     eulerr::euler()
-# p <- plot(venn1, labels = FALSE, quantities = TRUE, col = "white",
-#           fill = c("#66666620", "#66666660", "#66666640"))
-# ggsave("figures/figure2/figure2b.png", p, width = 2.5, height = 1.8)
-
-
 #############
 ## Panel B ## QTLs per gene
 #############
